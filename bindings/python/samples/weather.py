@@ -21,18 +21,21 @@ class GraphicsTest(SampleBase):
 
     def __display_current(self):
         blue = graphics.Color(0, 0, 255)
-        text = self.temp.get('temp') + ' \u00b0'
+        temp_string = str(round(self.temp.get('temp')))
+        text = temp_string + ' \u00b0'
         graphics.DrawText(self.matrix, self.font, 2, 10, blue, text)
 
     def __display_todays_low(self):
         red = graphics.Color(0, 0, 255)
-        text = self.temp.get('temp_min') + ' \u00b0'
-        graphics.DrawText(self.matrix, self.font, 2, 10, red, text)
+        temp_min_string = str(round(self.temp.get('temp_min')))
+        text = temp_min_string + ' \u00b0'
+        graphics.DrawText(self.matrix, self.font, 2, 25, red, text)
 
     def __display_todays_high(self):
         green = graphics.Color(0, 255, 0)
-        text = self.temp.get('temp_max') + ' \u00b0'
-        graphics.DrawText(self.matrix, self.font, 2, 10, green, text)
+        temp_max_string = str(round(self.temp.get('temp_max')))
+        text = temp_max_string + ' \u00b0'
+        graphics.DrawText(self.matrix, self.font, 2, 40, green, text)
 
     def __get_weather(self):
         key = open(".env","r").read().rstrip('\n')
