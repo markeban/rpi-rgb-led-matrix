@@ -17,7 +17,7 @@ class GraphicsTest(SampleBase):
 
     def run(self):
         while True:
-            # self.__get_weather()
+            self.__get_weather()
             self.__display_current()
             self.__display_image()
             self.__display_todays_low()
@@ -28,7 +28,7 @@ class GraphicsTest(SampleBase):
         font = graphics.Font()
         font.LoadFont("../../../fonts/7x13.bdf")
         blue = graphics.Color(0, 0, 255)
-        temp_string = "-2" 
+        temp_string = str(round(self.temp.get('temp')))
         text = temp_string + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 10, blue, text)
 
@@ -40,7 +40,7 @@ class GraphicsTest(SampleBase):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
         red = graphics.Color(0, 0, 255)
-        temp_min_string = "3"
+        temp_min_string = str(round(self.temp.get('temp_min')))
         text = '\u2193 ' +  temp_min_string + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 52, red, text)
 
@@ -48,7 +48,7 @@ class GraphicsTest(SampleBase):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
         green = graphics.Color(0, 255, 0)
-        temp_max_string = "11"
+        temp_max_string = str(round(self.temp.get('temp_max')))
         text = '\u2191 ' + temp_max_string + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 62, green, text)
 
