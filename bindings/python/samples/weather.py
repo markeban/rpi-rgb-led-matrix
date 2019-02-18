@@ -76,7 +76,7 @@ class GraphicsTest(SampleBase):
         finally:
             key_file.close()
 
-    def _select_image(self):
+    def __select_image(self):
         icon_map = {
             '01d': 'sunny_day.png',
             '02d': 'partly_cloudy_day.png',
