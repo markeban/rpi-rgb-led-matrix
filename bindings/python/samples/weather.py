@@ -10,10 +10,10 @@ class GraphicsTest(SampleBase):
         super(GraphicsTest, self).__init__(*args, **kwargs)
         self.canvas = self.matrix
         self.font = graphics.Font()
+        self.font.LoadFont("../../../fonts/7x13.bdf")
 
     def run(self):
-        # weather_data = self.__get_weather()
-        self.font.LoadFont("../../../fonts/7x13.bdf")
+        self.__get_weather()
         self.__display_current()
         self.__display_todays_low()
         self.__display_todays_high()
