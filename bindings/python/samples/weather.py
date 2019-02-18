@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 from samplebase import SampleBase
 from rgbmatrix import graphics
-import time
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from PIL import Image
 import pyowm
+import time
+import sys
+
 
 MAX_TRIES_API_CALL = 6
 
@@ -15,6 +19,7 @@ class GraphicsTest(SampleBase):
         while True:
             # self.__get_weather()
             self.__display_current()
+            self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
@@ -26,6 +31,10 @@ class GraphicsTest(SampleBase):
         temp_string = "-2" 
         text = temp_string + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 10, blue, text)
+
+    def __display_image(self):
+        image = Image.open('snow_clouds.png')
+        self.matrix.SetImage(image.convert('RGB'), 2, 20)
 
     def __display_todays_low(self):
         font = graphics.Font()
