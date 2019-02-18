@@ -8,7 +8,7 @@ import pyowm
 class GraphicsTest(SampleBase):
     def __init__(self, *args, **kwargs):
         super(GraphicsTest, self).__init__(*args, **kwargs)
-        self.canvas = self.matrix
+        # self.canvas = self.matrix
         self.font = graphics.Font()
         self.font.LoadFont("../../../fonts/7x13.bdf")
 
@@ -22,17 +22,17 @@ class GraphicsTest(SampleBase):
     def __display_current(self):
         blue = graphics.Color(0, 0, 255)
         text = temp.get('temp') + ' \u00b0'
-        graphics.DrawText(self.canvas, self.font, 2, 10, blue, text)
+        graphics.DrawText(self.matrix, self.font, 2, 10, blue, text)
 
     def __display_todays_low(self):
         red = graphics.Color(0, 0, 255)
         text = temp.get('temp_min') + ' \u00b0'
-        graphics.DrawText(self.canvas, self.font, 2, 10, red, text)
+        graphics.DrawText(self.matrix, self.font, 2, 10, red, text)
 
     def __display_todays_high(self):
         green = graphics.Color(0, 255, 0)
         text = temp.get('temp_max') + ' \u00b0'
-        graphics.DrawText(self.canvas, self.font, 2, 10, green, text)
+        graphics.DrawText(self.matrix, self.font, 2, 10, green, text)
 
     def __get_weather(self):
         owm = pyowm.OWM('your-API-key')
