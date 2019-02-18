@@ -77,7 +77,7 @@ class GraphicsTest(SampleBase):
             key_file.close()
 
     def _select_image(self):
-        icon_map = dict(
+        icon_map = {
             '01d': 'sunny_day.png',
             '02d': 'partly_cloudy_day.png',
             '03d': 'partly_cloudy_day.png',
@@ -87,16 +87,16 @@ class GraphicsTest(SampleBase):
             '11d': 'thunder_storms_day.png',
             '13d': 'snow_day.png',
             '50d': 'mist_day.png',
-            '01d': 'sunny_night.png',
-            '02d': 'partly_cloudy_night.png',
-            '03d': 'partly_cloudy_night.png',
-            '04d': 'cloudy_night.png',
-            '09d': 'scattered_showers_night.png',
-            '10d': 'rain_night.png',
-            '11d': 'thunder_storms_night.png',
-            '13d': 'snow_night.png',
-            '50d': 'mist_night.png'
-        )
+            '01n': 'sunny_night.png',
+            '02n': 'partly_cloudy_night.png',
+            '03n': 'partly_cloudy_night.png',
+            '04n': 'cloudy_night.png',
+            '09n': 'scattered_showers_night.png',
+            '10n': 'rain_night.png',
+            '11n': 'thunder_storms_night.png',
+            '13n': 'snow_night.png',
+            '50n': 'mist_night.png'
+        }
         return icon_map.get(self.icon, 'rainbow_other.png')
 
 # Main function
