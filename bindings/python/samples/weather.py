@@ -34,7 +34,7 @@ class GraphicsTest(SampleBase):
 
     def __display_image(self):
         image = Image.open('snow_clouds.png')
-        self.matrix.SetImage(image.convert('RGB'), 2, 20)
+        self.matrix.SetImage(image.convert('RGB'), 0, 10)
 
     def __display_todays_low(self):
         font = graphics.Font()
