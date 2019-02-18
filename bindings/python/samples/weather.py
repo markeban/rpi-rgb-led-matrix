@@ -110,7 +110,9 @@ class GraphicsTest(SampleBase):
             index = len(self.color_gradient) - 1
         else:
             index = temp_int + 29
-        return graphics.Color(self.color_gradient[index].rgb)
+        rgb_255 = tuple([round(z * 255)
+                         for z in self.color_gradient[index].rgb])
+        return graphics.Color(rgb_255)
 
 # Main function
 if __name__ == "__main__":
