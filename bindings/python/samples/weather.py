@@ -9,35 +9,39 @@ MAX_TRIES_API_CALL = 6
 class GraphicsTest(SampleBase):
     def __init__(self, *args, **kwargs):
         super(GraphicsTest, self).__init__(*args, **kwargs)
-        self.font = graphics.Font()
-        self.font.LoadFont("../../../fonts/7x13.bdf")
         self.api_tries = 0
 
     def run(self):
         while True:
-            self.__get_weather()
+            # self.__get_weather()
             self.__display_current()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
 
     def __display_current(self):
+        font = graphics.Font()
+        font.LoadFont("../../../fonts/7x13.bdf")
         blue = graphics.Color(0, 0, 255)
-        temp_string = str(round(self.temp.get('temp')))
+        temp_string = "-2" 
         text = temp_string + '\u00b0C'
-        graphics.DrawText(self.matrix, self.font, 2, 10, blue, text)
+        graphics.DrawText(self.matrix, font, 2, 10, blue, text)
 
     def __display_todays_low(self):
+        font = graphics.Font()
+        font.LoadFont("../../../fonts/5x7.bdf")
         red = graphics.Color(0, 0, 255)
-        temp_min_string = str(round(self.temp.get('temp_min')))
-        text = temp_min_string + '\u00b0C'
-        graphics.DrawText(self.matrix, self.font, 2, 25, red, text)
+        temp_min_string = "3"
+        text = '\u2193 ' +  temp_min_string + '\u00b0C'
+        graphics.DrawText(self.matrix, font, 2, 40, red, text)
 
     def __display_todays_high(self):
+        font = graphics.Font()
+        font.LoadFont("../../../fonts/5x7.bdf")
         green = graphics.Color(0, 255, 0)
-        temp_max_string = str(round(self.temp.get('temp_max')))
-        text = temp_max_string + '\u00b0C'
-        graphics.DrawText(self.matrix, self.font, 2, 40, green, text)
+        temp_max_string = "111"
+        text = '\u2191 ' + temp_max_string + '\u00b0C'
+        graphics.DrawText(self.matrix, font, 2, 60, green, text)
 
     def __get_weather(self):
         key_file = open(".env", "r")
