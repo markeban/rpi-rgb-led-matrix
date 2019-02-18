@@ -23,6 +23,7 @@ class GraphicsTest(SampleBase):
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
+            self.matrix.Clear()
 
     def __display_current(self):
         font = graphics.Font()
