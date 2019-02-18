@@ -34,7 +34,7 @@ class GraphicsTest(SampleBase):
         graphics.DrawText(self.matrix, font, 2, 10, blue, text)
 
     def __display_image(self):
-        image = Image.open('snow_clouds.png')
+        image = Image.open('icons/' + self.__select_image())
         self.matrix.SetImage(image.convert('RGB'), 0, 10)
 
     def __display_todays_low(self):
@@ -60,6 +60,7 @@ class GraphicsTest(SampleBase):
             owm = pyowm.OWM(key)
             observation = owm.weather_at_id(4887398)  # Chicago
             new_temp = observation.get_weather().get_temperature('celsius')
+            new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError) as error:
             print(error)
             self.api_tries += 1
@@ -71,8 +72,32 @@ class GraphicsTest(SampleBase):
         else:
             self.api_tries = 0
             self.temp = new_temp
+            self.icon = new_icon
         finally:
             key_file.close()
+
+    def _select_image(self):
+        icon_map = dict(
+            '01d': 'sunny_day.png',
+            '02d': 'partly_cloudy_day.png',
+            '03d': 'partly_cloudy_day.png',
+            '04d': 'cloudy_day.png',
+            '09d': 'scattered_showers_day.png',
+            '10d': 'rain_day.png',
+            '11d': 'thunder_storms_day.png',
+            '13d': 'snow_day.png',
+            '50d': 'mist_day.png',
+            '01d': 'sunny_night.png',
+            '02d': 'partly_cloudy_night.png',
+            '03d': 'partly_cloudy_night.png',
+            '04d': 'cloudy_night.png',
+            '09d': 'scattered_showers_night.png',
+            '10d': 'rain_night.png',
+            '11d': 'thunder_storms_night.png',
+            '13d': 'snow_night.png',
+            '50d': 'mist_night.png'
+        )
+        return icon_map.get(self.icon, 'rainbow_other.png')
 
 # Main function
 if __name__ == "__main__":
