@@ -10,7 +10,7 @@ from PIL import Image
 # else:
 #     image_file = sys.argv[1]
 
-image = Image.open('snowflake.png')
+image = Image.open('snow_clouds.png')
 
 # Configuration for the matrix
 options = RGBMatrixOptions()

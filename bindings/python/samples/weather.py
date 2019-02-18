@@ -33,15 +33,15 @@ class GraphicsTest(SampleBase):
         red = graphics.Color(0, 0, 255)
         temp_min_string = "3"
         text = '\u2193 ' +  temp_min_string + '\u00b0C'
-        graphics.DrawText(self.matrix, font, 2, 40, red, text)
+        graphics.DrawText(self.matrix, font, 2, 52, red, text)
 
     def __display_todays_high(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
         green = graphics.Color(0, 255, 0)
-        temp_max_string = "111"
+        temp_max_string = "11"
         text = '\u2191 ' + temp_max_string + '\u00b0C'
-        graphics.DrawText(self.matrix, font, 2, 60, green, text)
+        graphics.DrawText(self.matrix, font, 2, 62, green, text)
 
     def __get_weather(self):
         key_file = open(".env", "r")
