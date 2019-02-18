@@ -6,6 +6,7 @@ from PIL import Image
 import pyowm
 import time
 import sys
+import colour
 
 
 MAX_TRIES_API_CALL = 6
@@ -14,6 +15,9 @@ class GraphicsTest(SampleBase):
     def __init__(self, *args, **kwargs):
         super(GraphicsTest, self).__init__(*args, **kwargs)
         self.api_tries = 0
+        blue = colour.Color('blue')
+        red = colour.Color('red')
+        self.color_gradient = list(blue.range_to(red, 75))
 
     def run(self):
         while True:
@@ -28,10 +32,9 @@ class GraphicsTest(SampleBase):
     def __display_current(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/7x13.bdf")
-        blue = graphics.Color(0, 0, 255)
-        temp_string = str(round(self.temp.get('temp')))
-        text = temp_string + '\u00b0C'
-        graphics.DrawText(self.matrix, font, 2, 10, blue, text)
+        temp_int = round(self.temp.get('temp'))
+        text = str(temp_int) + '\u00b0C'
+        graphics.DrawText(self.matrix, font, 2, 10, self.__get_color_gradient(temp_int), text)
 
     def __display_image(self):
         image = Image.open('icons/' + self.__select_image())
@@ -40,18 +43,18 @@ class GraphicsTest(SampleBase):
     def __display_todays_low(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
-        red = graphics.Color(0, 0, 255)
-        temp_min_string = str(round(self.temp.get('temp_min')))
-        text = '\u2193 ' +  temp_min_string + '\u00b0C'
-        graphics.DrawText(self.matrix, font, 2, 52, red, text)
+        temp_min_int = round(self.temp.get('temp_min'))
+        text = '\u2193 ' + str(temp_min_int) + '\u00b0C'
+        graphics.DrawText(self.matrix, font, 2, 52,
+                          self.__get_color_gradient(temp_min_int), text)
 
     def __display_todays_high(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
-        green = graphics.Color(0, 255, 0)
-        temp_max_string = str(round(self.temp.get('temp_max')))
-        text = '\u2191 ' + temp_max_string + '\u00b0C'
-        graphics.DrawText(self.matrix, font, 2, 62, green, text)
+        temp_max_int = round(self.temp.get('temp_max'))
+        text = '\u2191 ' + str(temp_max_int) + '\u00b0C'
+        graphics.DrawText(self.matrix, font, 2, 62,
+                          self.__get_color_gradient(temp_max_int), text)
 
     def __get_weather(self):
         key_file = open(".env", "r")
@@ -98,6 +101,16 @@ class GraphicsTest(SampleBase):
             '50n': 'mist_night.png'
         }
         return icon_map.get(self.icon, 'rainbow_other.png')
+
+    def __get_color_gradient(self, temp_int):
+        # min/max range -30/45 Celsius
+        if temp_int < -30:
+            index = 0
+        elif temp_int > 45:
+            index = len(self.color_gradient) - 1
+        else:
+            index = temp_int + 29
+        return graphics.Color(self.color_gradient[index].rgb)
 
 # Main function
 if __name__ == "__main__":
