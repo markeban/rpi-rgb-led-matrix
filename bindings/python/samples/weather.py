@@ -9,6 +9,7 @@ import sys
 import colour
 import logging
 from logging import handlers
+import datetime
 logger = logging.getLogger(__name__)
 file_handler = handlers.RotatingFileHandler(
     '/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
@@ -126,7 +127,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.error("Uncaught exception", exc_info=(
+    logger.error("Uncaught exception at " + datetime.datetime.now(), exc_info=(
         exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
