@@ -7,7 +7,14 @@ import pyowm
 import time
 import sys
 import colour
-
+import logging
+from logging import handlers
+logger = logging.getLogger(__name__)
+file_handler = handlers.RotatingFileHandler(
+    '/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
+logger.addHandler(file_handler)
+stderr_handler = logging.StreamHandler()
+logger.addHandler(stderr_handler)
 
 MAX_TRIES_API_CALL = 6
 
@@ -65,12 +72,12 @@ class GraphicsTest(SampleBase):
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError) as error:
-            print(error)
+            logging.exception(error)
             self.api_tries += 1
             if self.api_tries >= MAX_TRIES_API_CALL:
                 raise "API call failed 6 times in a row. Will not try again"
             else:
-                print("Will try again in 10 minutes to update weather data. Displaying old data.")
+                logging.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
         else:
             self.api_tries = 0
@@ -113,6 +120,16 @@ class GraphicsTest(SampleBase):
         rgb_255 = tuple([round(z * 255)
                          for z in self.color_gradient[index].rgb])
         return graphics.Color(rgb_255)
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.error("Uncaught exception", exc_info=(
+        exc_type, exc_value, exc_traceback))
+
+sys.excepthook = handle_exception
 
 # Main function
 if __name__ == "__main__":
