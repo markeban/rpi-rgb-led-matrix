@@ -16,6 +16,8 @@ file_handler = handlers.RotatingFileHandler(
 logger.addHandler(file_handler)
 stderr_handler = logging.StreamHandler()
 logger.addHandler(stderr_handler)
+logger.basicConfig(format='%(asctime)s - %(message)s',
+                    datefmt='%d-%b-%y %H:%M:%S')
 
 MAX_TRIES_API_CALL = 6
 
@@ -127,7 +129,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.error("Uncaught exception at " + datetime.datetime.now(), exc_info=(
+    logger.error("Uncaught exception", exc_info=(
         exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
