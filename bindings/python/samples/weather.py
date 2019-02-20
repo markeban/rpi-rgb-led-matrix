@@ -117,9 +117,9 @@ class GraphicsTest(SampleBase):
             index = len(self.color_gradient) - 1
         else:
             index = temp_int + 29
-        rgb_255 = tuple([round(z * 255)
+        rgb_255 = tuple([int(round(z * 255))
                          for z in self.color_gradient[index].rgb])
-        return graphics.Color(rgb_255)
+        return graphics.Color(rgb_255[0], rgb_255[1], rgb_255[2])
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
