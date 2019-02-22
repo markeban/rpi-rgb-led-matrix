@@ -16,7 +16,7 @@ file_handler = handlers.RotatingFileHandler(
 logger.addHandler(file_handler)
 stderr_handler = logging.StreamHandler()
 logger.addHandler(stderr_handler)
-logger.basicConfig(format='%(asctime)s - %(message)s',
+logging.basicConfig(format='%(asctime)s - %(message)s',
                     datefmt='%d-%b-%y %H:%M:%S')
 
 MAX_TRIES_API_CALL = 6
