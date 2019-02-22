@@ -75,12 +75,12 @@ class GraphicsTest(SampleBase):
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError) as error:
-            logging.exception(error)
+            logger.exception(error)
             self.api_tries += 1
             if self.api_tries >= MAX_TRIES_API_CALL:
                 raise "API call failed 6 times in a row. Will not try again"
             else:
-                logging.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
+                logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
         else:
             self.api_tries = 0
@@ -94,7 +94,7 @@ class GraphicsTest(SampleBase):
             '01d': 'sunny_day.png',
             '02d': 'partly_cloudy_day.png',
             '03d': 'partly_cloudy_day.png',
-            '04d': 'cloudy_day.png',
+            '04d': 'cloudy.png',
             '09d': 'scattered_showers_day.png',
             '10d': 'rain_day.png',
             '11d': 'thunder_storms_day.png',
@@ -103,7 +103,7 @@ class GraphicsTest(SampleBase):
             '01n': 'sunny_night.png',
             '02n': 'partly_cloudy_night.png',
             '03n': 'partly_cloudy_night.png',
-            '04n': 'cloudy_night.png',
+            '04n': 'cloudy.png',
             '09n': 'scattered_showers_night.png',
             '10n': 'rain_night.png',
             '11n': 'thunder_storms_night.png',
@@ -129,8 +129,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.error("Uncaught exception", exc_info=(
-        exc_type, exc_value, exc_traceback))
+    logger.exception("Uncaught exception")
 
 sys.excepthook = handle_exception
 
