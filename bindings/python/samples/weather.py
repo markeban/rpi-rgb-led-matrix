@@ -29,14 +29,22 @@ class GraphicsTest(SampleBase):
 
     def run(self):
         while True:
+            self.__determine_brightness()
             self.__get_weather()
+            self.matrix.Clear()
             self.__display_current()
             self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
-            self.matrix.Clear()
 
+    def __determine_brightness(self):
+        hour = int(time.strftime('%H'))
+        if hour > 7 || hour < 22:
+            self.matrix.brightness = 100
+        else:
+            self.matrix.brightness = 20
+    
     def __display_current(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/7x13.bdf")
