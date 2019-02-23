@@ -10,7 +10,7 @@ import colour
 import logging
 from logging import handlers
 import datetime
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 file_handler = handlers.RotatingFileHandler('/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
 stderr_handler = logging.StreamHandler()
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class GraphicsTest(SampleBase):
             '11d': 'thunder_storms_day.png',
             '13d': 'snow_day.png',
             '50d': 'mist_day.png',
-            '01n': 'sunny_night.png',
+            '01n': 'clear_night.png',
             '02n': 'partly_cloudy_night.png',
             '03n': 'partly_cloudy_night.png',
             '04n': 'cloudy.png',
