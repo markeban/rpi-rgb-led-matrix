@@ -39,8 +39,9 @@ class GraphicsTest(SampleBase):
             time.sleep(600) # show display for 10 minutes before refreshing
 
     def __determine_brightness(self):
-        hour = int(time.strftime('%H'))
-        if hour > 7 || hour < 22:
+        # hour = int(time.strftime('%H'))
+        hour = 7
+        if 7 <= hour <= 10:
             self.matrix.brightness = 100
         else:
             self.matrix.brightness = 20
