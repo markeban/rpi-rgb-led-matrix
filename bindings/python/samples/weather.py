@@ -10,10 +10,10 @@ import colour
 import logging
 from logging import handlers
 import datetime
-logger = logging.getLogger(__name__)
-logger.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 file_handler = handlers.RotatingFileHandler('/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
 stderr_handler = logging.StreamHandler()
+logger = logging.getLogger(__name__)
 logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
 
