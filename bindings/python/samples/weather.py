@@ -11,13 +11,11 @@ import logging
 from logging import handlers
 import datetime
 logger = logging.getLogger(__name__)
-file_handler = handlers.RotatingFileHandler(
-    '/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
-logger.addHandler(file_handler)
+logger.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+file_handler = handlers.RotatingFileHandler('/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
 stderr_handler = logging.StreamHandler()
+logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
-logger.basicConfig(format='%(asctime)s - %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S')
 
 MAX_TRIES_API_CALL = 6
 
@@ -83,6 +81,7 @@ class GraphicsTest(SampleBase):
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
         else:
+            logger.info("api call successful")
             self.api_tries = 0
             self.temp = new_temp
             self.icon = new_icon
