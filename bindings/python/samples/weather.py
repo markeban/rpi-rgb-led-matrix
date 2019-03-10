@@ -7,12 +7,14 @@ import pyowm
 import time
 import sys
 import colour
-import logging
-from logging import handlers
 import datetime
-logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+import logging
+from logging import handlers 
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 file_handler = handlers.RotatingFileHandler('/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
+file_handler.setFormatter(formatter)
 stderr_handler = logging.StreamHandler()
+stderr_handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
