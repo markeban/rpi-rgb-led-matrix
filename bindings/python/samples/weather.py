@@ -4,6 +4,7 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import pyowm
+from socket import timeout
 import time
 import sys
 import colour
@@ -90,6 +91,9 @@ class GraphicsTest(SampleBase):
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
+        except timeout as error:
+            logger.warning("socket timeout")
+            pass
         else:
             logger.info("api call successful")
             self.api_tries = 0
