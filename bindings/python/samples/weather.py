@@ -44,9 +44,9 @@ class GraphicsTest(SampleBase):
     def __determine_brightness(self):
         hour = int(time.strftime('%H'))
         if 7 <= hour <= 21:
-            self.matrix.brightness = 100
+            self.matrix.brightness = 70
         else:
-            self.matrix.brightness = 20
+            self.matrix.brightness = 10
     
     def __display_current(self):
         font = graphics.Font()
