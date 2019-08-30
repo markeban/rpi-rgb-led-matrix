@@ -4,7 +4,6 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import pyowm
-# from pyowm.exceptions.api_call_error import APIInvalidSSLCertificateError
 from socket import timeout
 import time
 import sys
@@ -156,21 +155,22 @@ class GraphicsTest(SampleBase):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
         textColor = graphics.Color(255,105,180)
-        graphics.DrawText(self.matrix, font, 2, 10, textColor, "Fail")
-        graphics.DrawText(self.matrix, font, 2, 30, textColor, "Try in")
+        graphics.DrawText(self.matrix, font, 2, 10, textColor, "Failed")
+        graphics.DrawText(self.matrix, font, 2, 20, textColor, "Try")
+        graphics.DrawText(self.matrix, font, 2, 30, textColor, "Again on:")
         graphics.DrawText(
             self.matrix,
             font,
             2,
-            50,
+            40,
             textColor,
-            try_again_time.strftime("%a")
+            try_again_time.strftime("%A")
         )
         graphics.DrawText(
             self.matrix,
             font,
             2,
-            60,
+            50,
             textColor,
             try_again_time.strftime("%H:%M:%S")
         )
