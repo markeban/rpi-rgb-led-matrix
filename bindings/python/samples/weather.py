@@ -164,7 +164,7 @@ class GraphicsTest(SampleBase):
             2,
             40,
             textColor,
-            try_again_time.strftime("%A")
+            try_again_time.strftime("%a")
         )
         graphics.DrawText(
             self.matrix,
@@ -172,7 +172,7 @@ class GraphicsTest(SampleBase):
             2,
             50,
             textColor,
-            try_again_time.strftime("%H:%M:%S")
+            try_again_time.strftime("%H:%M")
         )
 
 
