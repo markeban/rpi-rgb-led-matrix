@@ -37,12 +37,12 @@ class GraphicsTest(SampleBase):
         while True:
             self.__determine_brightness()
             self.__get_weather()
-            self.matrix.Clear()
             self.__display_current()
             self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
+            self.matrix.Clear()
 
     def __determine_brightness(self):
         hour = int(time.strftime('%H'))
@@ -82,23 +82,24 @@ class GraphicsTest(SampleBase):
         key_file = open(".env", "r")
         key = key_file.read().rstrip('\n')
         try:
+            # raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError # let's raise an error to test
             owm = pyowm.OWM(key)
             observation = owm.weather_at_id(4887398)  # Chicago
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError, pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError) as error:
-            logger.exception(error)
+            logger.warning(error)
             self.api_tries += 1
-            if self.api_tries >= MAX_TRIES_API_CALL:
-                font = graphics.Font()
-                font.LoadFont("../../../fonts/5x7.bdf")
-                textColor = graphics.Color(255,105,180)
-                graphics.DrawText(self.matrix, font, 2, 10, self.__get_color_gradient(temp_int), "Fail") 
-                graphics.DrawText(self.matrix, font, 2, 30, self.__get_color_gradient(temp_int), "Try Again") 
-                time_message = self.api_tries * 600
-                graphics.DrawText(self.matrix, font, 2, 50, self.__get_color_gradient(temp_int), "some text") # say when next attempt will be 
-                time.sleep(time_message)
-                # raise MyWeatherError("API call failed 6 times in a row. Will not try again")
+            if self.api_tries >= MAX_TRIES_API_CALL and observation is None:
+                now = datetime.datetime.now()
+                try_again_seconds = 600 * self.api_tries
+                try_again_time = now + datetime.timedelta(seconds=try_again_seconds)
+                logger.warning(
+                    "failed to get weather data after " + str(self.api_tries) + " attempts. Will try again in " + str(try_again_seconds) + " seconds(at " + try_again_time.strftime("%d-%b-%y %H:%M:%S") + ")"
+                )
+                self.__display_data_failure(try_again_time)
+                time.sleep(try_again_seconds)
+                pass
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
@@ -147,6 +148,30 @@ class GraphicsTest(SampleBase):
         rgb_255 = tuple([int(round(z * 255))
                          for z in self.color_gradient[index].rgb])
         return graphics.Color(rgb_255[0], rgb_255[1], rgb_255[2])
+
+    def __display_data_failure(self, try_again_time):
+        font = graphics.Font()
+        font.LoadFont("../../../fonts/5x7.bdf")
+        textColor = graphics.Color(255,105,180)
+        graphics.DrawText(self.matrix, font, 2, 10, textColor, "Fail")
+        graphics.DrawText(self.matrix, font, 2, 30, textColor, "Try in")
+        graphics.DrawText(
+            self.matrix,
+            font,
+            2,
+            50,
+            textColor,
+            try_again_time.strftime("%a")
+        )
+        graphics.DrawText(
+            self.matrix,
+            font,
+            2,
+            60,
+            textColor,
+            try_again_time.strftime("%H:%M:%S")
+        )
+
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
