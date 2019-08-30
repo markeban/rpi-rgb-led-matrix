@@ -4,6 +4,7 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 import pyowm
+# from pyowm.exceptions.api_call_error import APIInvalidSSLCertificateError
 from socket import timeout
 import time
 import sys
@@ -82,15 +83,17 @@ class GraphicsTest(SampleBase):
         key_file = open(".env", "r")
         key = key_file.read().rstrip('\n')
         try:
-            # raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError # let's raise an error to test
             owm = pyowm.OWM(key)
+            observation = None
+            raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError("lets raise")
+            
             observation = owm.weather_at_id(4887398)  # Chicago
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError, pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError) as error:
             logger.warning(error)
             self.api_tries += 1
-            if self.api_tries >= MAX_TRIES_API_CALL and observation is None:
+            if self.api_tries >= MAX_TRIES_API_CALL or observation is None:
                 now = datetime.datetime.now()
                 try_again_seconds = 600 * self.api_tries
                 try_again_time = now + datetime.timedelta(seconds=try_again_seconds)
