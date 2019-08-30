@@ -21,7 +21,8 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
 
-MAX_TRIES_API_CALL = 6
+DATA_DELAY_REFRESH_LIMIT = 6
+MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
 
 class GraphicsTest(SampleBase):
     class MyWeatherException(Exception):
@@ -82,26 +83,26 @@ class GraphicsTest(SampleBase):
         key_file = open(".env", "r")
         key = key_file.read().rstrip('\n')
         try:
-            owm = pyowm.OWM(key)
             observation = None
-            raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError("lets raise")
-            
+            owm = pyowm.OWM(key)
+            # raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError("lets raise")
             observation = owm.weather_at_id(4887398)  # Chicago
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
         except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError, pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError) as error:
             logger.warning(error)
             self.api_tries += 1
-            if self.api_tries >= MAX_TRIES_API_CALL or observation is None:
+            if self.api_tries >= DATA_DELAY_REFRESH_LIMIT or observation is None:
+                if self.api_tries >= MAX_TRIES_OS_NETWORK_RESET_LIMIT: self.__reset_os_network_interface()
                 now = datetime.datetime.now()
                 try_again_seconds = 600 * self.api_tries
                 try_again_time = now + datetime.timedelta(seconds=try_again_seconds)
                 logger.warning(
-                    "failed to get weather data after " + str(self.api_tries) + " attempts. Will try again in " + str(try_again_seconds) + " seconds(at " + try_again_time.strftime("%d-%b-%y %H:%M:%S") + ")"
+                    "failed to get weather data after " + str(self.api_tries) + " attempt(s). Will try again in " + str(round(try_again_seconds/60)) + " minutes (at " + try_again_time.strftime("%d-%b-%y %H:%M:%S") + ")"
                 )
                 self.__display_data_failure(try_again_time)
                 time.sleep(try_again_seconds)
-                pass
+                self.__get_weather()
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
@@ -115,6 +116,11 @@ class GraphicsTest(SampleBase):
             self.icon = new_icon
         finally:
             key_file.close()
+            self.matrix.Clear()
+
+    def __reset_os_network_interface(self):
+       cmd = os.system("/etc/init.d/networking restart")
+       logger.warning("Reset OS network interface. Response: " + cmd)
 
     def __select_image(self):
         icon_map = {
