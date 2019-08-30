@@ -17,12 +17,15 @@ file_handler.setFormatter(formatter)
 stderr_handler = logging.StreamHandler()
 stderr_handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 logger.addHandler(stderr_handler)
 
 MAX_TRIES_API_CALL = 6
 
 class GraphicsTest(SampleBase):
+    class MyWeatherException(Exception):
+        pass
     def __init__(self, *args, **kwargs):
         super(GraphicsTest, self).__init__(*args, **kwargs)
         self.api_tries = 0
@@ -83,11 +86,19 @@ class GraphicsTest(SampleBase):
             observation = owm.weather_at_id(4887398)  # Chicago
             new_temp = observation.get_weather().get_temperature('celsius')
             new_icon = observation.get_weather().get_weather_icon_name()
-        except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError) as error:
+        except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError, pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError) as error:
             logger.exception(error)
             self.api_tries += 1
             if self.api_tries >= MAX_TRIES_API_CALL:
-                raise "API call failed 6 times in a row. Will not try again"
+                font = graphics.Font()
+                font.LoadFont("../../../fonts/5x7.bdf")
+                textColor = graphics.Color(255,105,180)
+                graphics.DrawText(self.matrix, font, 2, 10, self.__get_color_gradient(temp_int), "Fail") 
+                graphics.DrawText(self.matrix, font, 2, 30, self.__get_color_gradient(temp_int), "Try Again") 
+                time_message = self.api_tries * 600
+                graphics.DrawText(self.matrix, font, 2, 50, self.__get_color_gradient(temp_int), "some text") # say when next attempt will be 
+                time.sleep(time_message)
+                # raise MyWeatherError("API call failed 6 times in a row. Will not try again")
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
                 pass
