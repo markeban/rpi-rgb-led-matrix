@@ -21,7 +21,7 @@ MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
 class Weather(SampleBase):
     def __init__(self, *args, **kwargs):
         super(Weather, self).__init__(*args, **kwargs)
-        self.current_temp is None
+        self.current_temp = None
         self.api_tries = 0
         blue = colour.Color('blue')
         red = colour.Color('red')
@@ -36,7 +36,6 @@ class Weather(SampleBase):
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
-            self.matrix.Clear()
 
     def __determine_brightness(self):
         hour = int(time.strftime('%H'))
@@ -94,10 +93,13 @@ class Weather(SampleBase):
                 )
                 self.__display_data_failure(try_again_time)
                 time.sleep(try_again_seconds)
+                self.matrix.Clear()
                 self.__get_weather()
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
-                pass         
+                pass
+        self.matrix.Clear()
+                
 
     def __reset_os_network_interface(self):
        cmd = os.system("/etc/init.d/networking restart")
