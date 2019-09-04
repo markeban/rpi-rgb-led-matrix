@@ -32,7 +32,7 @@ class Weather(SampleBase):
             self.__determine_brightness()
             self.__get_weather()
             self.__display_current()
-            # self.__display_image()
+            self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
@@ -79,7 +79,7 @@ class Weather(SampleBase):
             self.current_temp = dk.current_temp()
             self.todays_low = dk.todays_low()
             self.todays_high = dk.todays_high()
-            # self.icon =
+            self.icon = dk.icon()
             self.api_tries = 0
         else:
             self.api_tries += 1
@@ -107,24 +107,14 @@ class Weather(SampleBase):
 
     def __select_image(self):
         icon_map = {
-            '01d': 'sunny_day.png',
-            '02d': 'partly_cloudy_day.png',
-            '03d': 'partly_cloudy_day.png',
-            '04d': 'cloudy.png',
-            '09d': 'scattered_showers_day.png',
-            '10d': 'rain_day.png',
-            '11d': 'thunder_storms_day.png',
-            '13d': 'snow_day.png',
-            '50d': 'mist_day.png',
-            '01n': 'clear_night.png',
-            '02n': 'partly_cloudy_night.png',
-            '03n': 'partly_cloudy_night.png',
-            '04n': 'cloudy.png',
-            '09n': 'scattered_showers_night.png',
-            '10n': 'rain_night.png',
-            '11n': 'thunder_storms_night.png',
-            '13n': 'snow_night.png',
-            '50n': 'mist_night.png'
+            'clear-day': 'sunny_day.png',
+            'clear-night': 'clear_night.png',
+            'partly-cloudy-day': 'partly_cloudy_day.png',
+            'partly-cloudy-night': 'partly_cloudy_night.png',
+            'cloudy': 'cloudy.png',
+            'rain': 'rain_day.png',
+            'thunderstorm': 'thunder_storms_day.png',
+            'snow': 'snow_night.png',
         }
         return icon_map.get(self.icon, 'rainbow_other.png')
 
