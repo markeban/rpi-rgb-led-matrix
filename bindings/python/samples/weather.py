@@ -3,19 +3,13 @@ from samplebase import SampleBase
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
+from darksky import DarkSky
 import pyowm
-from socket import timeout
 import time
-import sys
 import colour
 import datetime
-import logging
-from logging import handlers 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
-file_handler = handlers.RotatingFileHandler('/var/log/weather-python/file.log', maxBytes=(1048576*5), backupCount=7)
-file_handler.setFormatter(formatter)
-stderr_handler = logging.StreamHandler()
-stderr_handler.setFormatter(formatter)
+import os
+from mylogger import logging, file_handler, stderr_handler
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
@@ -24,11 +18,10 @@ logger.addHandler(stderr_handler)
 DATA_DELAY_REFRESH_LIMIT = 6
 MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
 
-class GraphicsTest(SampleBase):
-    class MyWeatherException(Exception):
-        pass
+class Weather(SampleBase):
     def __init__(self, *args, **kwargs):
-        super(GraphicsTest, self).__init__(*args, **kwargs)
+        super(Weather, self).__init__(*args, **kwargs)
+        self.current_temp is None
         self.api_tries = 0
         blue = colour.Color('blue')
         red = colour.Color('red')
@@ -39,7 +32,7 @@ class GraphicsTest(SampleBase):
             self.__determine_brightness()
             self.__get_weather()
             self.__display_current()
-            self.__display_image()
+            # self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
             time.sleep(600) # show display for 10 minutes before refreshing
@@ -55,7 +48,7 @@ class GraphicsTest(SampleBase):
     def __display_current(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/7x13.bdf")
-        temp_int = round(self.temp.get('temp'))
+        temp_int = round(self.current_temp)
         text = str(temp_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 10, self.__get_color_gradient(temp_int), text)
 
@@ -66,7 +59,7 @@ class GraphicsTest(SampleBase):
     def __display_todays_low(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
-        temp_min_int = round(self.temp.get('temp_min'))
+        temp_min_int = round(self.todays_low)
         text = '\u2193 ' + str(temp_min_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 52,
                           self.__get_color_gradient(temp_min_int), text)
@@ -74,25 +67,24 @@ class GraphicsTest(SampleBase):
     def __display_todays_high(self):
         font = graphics.Font()
         font.LoadFont("../../../fonts/5x7.bdf")
-        temp_max_int = round(self.temp.get('temp_max'))
+        temp_max_int = round(self.todays_high)
         text = '\u2191 ' + str(temp_max_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 62,
                           self.__get_color_gradient(temp_max_int), text)
 
     def __get_weather(self):
-        key_file = open(".env", "r")
-        key = key_file.read().rstrip('\n')
-        try:
-            observation = None
-            owm = pyowm.OWM(key)
-            # raise pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError("lets raise")
-            observation = owm.weather_at_id(4887398)  # Chicago
-            new_temp = observation.get_weather().get_temperature('celsius')
-            new_icon = observation.get_weather().get_weather_icon_name()
-        except (pyowm.exceptions.api_response_error.APIResponseError, pyowm.exceptions.api_call_error.APICallTimeoutError, pyowm.exceptions.api_call_error.APIInvalidSSLCertificateError) as error:
-            logger.warning(error)
+        dk = DarkSky()
+        dk.get_data()
+        if dk.is_success():
+            logger.info('Success getting weather data from API')
+            self.current_temp = dk.current_temp()
+            self.todays_low = dk.todays_low()
+            self.todays_high = dk.todays_high()
+            # self.icon =
+            self.api_tries = 0
+        else:
             self.api_tries += 1
-            if self.api_tries >= DATA_DELAY_REFRESH_LIMIT or observation is None:
+            if self.api_tries >= DATA_DELAY_REFRESH_LIMIT and self.current_temp is None:
                 if self.api_tries >= MAX_TRIES_OS_NETWORK_RESET_LIMIT: self.__reset_os_network_interface()
                 now = datetime.datetime.now()
                 try_again_seconds = 600 * self.api_tries
@@ -105,18 +97,7 @@ class GraphicsTest(SampleBase):
                 self.__get_weather()
             else:
                 logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
-                pass
-        except timeout as error:
-            logger.warning("socket timeout")
-            pass
-        else:
-            logger.info("api call successful")
-            self.api_tries = 0
-            self.temp = new_temp
-            self.icon = new_icon
-        finally:
-            key_file.close()
-            self.matrix.Clear()
+                pass         
 
     def __reset_os_network_interface(self):
        cmd = os.system("/etc/init.d/networking restart")
@@ -181,18 +162,8 @@ class GraphicsTest(SampleBase):
             try_again_time.strftime("%H:%M")
         )
 
-
-def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-
-    logger.error("Uncaught Exception", exc_info=(exc_type, exc_value, exc_traceback))
-
-sys.excepthook = handle_exception
-
 # Main function
 if __name__ == "__main__":
-    graphics_test = GraphicsTest()
-    if (not graphics_test.process()):
-        graphics_test.print_help()
+    weather = Weather()
+    if (not weather.process()):
+        weather.print_help()
