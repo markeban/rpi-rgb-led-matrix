@@ -9,14 +9,3 @@ file_handler = handlers.RotatingFileHandler(
 file_handler.setFormatter(formatter)
 stderr_handler = logging.StreamHandler()
 stderr_handler.setFormatter(formatter)
-
-# def handle_exception(exc_type, exc_value, exc_traceback):
-#    if issubclass(exc_type, KeyboardInterrupt):
-#        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-#        return
-#
-#    logger.error("Uncaught Exception", exc_info=(
-#        exc_type, exc_value, exc_traceback))
-#
-#
-# sys.excepthook = handle_exception
