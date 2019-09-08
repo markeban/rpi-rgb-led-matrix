@@ -75,7 +75,7 @@ class Weather(SampleBase):
         dk = DarkSky()
         if dk.is_success():
             logger.info('API success on attempt: ' + str(self.api_tries) + ' current_temp: ' + str(dk.current_temp()) + ' todays_low: ' +
-                        str(dk.todays_low()) + ' todays_high: ' + str(dk.todays_high()) + ' icon: ' + str(dk.icon())
+                        str(dk.todays_low()) + ' todays_high: ' + str(dk.todays_high()) + ' icon: ' + str(dk.icon()))
             self.current_temp = dk.current_temp()
             self.todays_low = dk.todays_low()
             self.todays_high = dk.todays_high()
