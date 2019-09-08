@@ -162,9 +162,16 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 # Main function
 if __name__ == "__main__":
+    weather = Weather()
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     logger.addHandler(file_handler)
     logger.addHandler(stderr_handler)
     sys.excepthook = handle_exception
-    weather = Weather()
+
+
+# # Main function
+# if __name__ == "__main__":
+#     weather = Weather()
+#     if (not weather.process()):
+#         weather.print_help()
