@@ -1,11 +1,8 @@
 #!/usr/bin/env python
+import sys
 import requests
-from datetime import datetime
 from mylogger import logging, file_handler, stderr_handler
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler)
-logger.addHandler(stderr_handler)
+from datetime import datetime
 
 ################ Chicago ###################
 LATITUDE = '41.974925'
@@ -69,3 +66,19 @@ class DarkSky:
 
   def __select_temp(self, hourly_forecast):
       return int(hourly_forecast["temperature"])
+
+# def handle_exception(exc_type, exc_value, exc_traceback):
+#    if issubclass(exc_type, KeyboardInterrupt):
+#        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+#        return
+
+#    logger.error("Uncaught Exception", exc_info=(
+#        exc_type, exc_value, exc_traceback))
+
+# Main function
+# if __name__ == "__main__":
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+# logger.addHandler(file_handler)
+# logger.addHandler(stderr_handler)
+# sys.excepthook = handle_exception

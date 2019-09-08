@@ -4,16 +4,13 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 from darksky import DarkSky
+import sys
 import pyowm
 import time
 import colour
 import datetime
 import os
 from mylogger import logging, file_handler, stderr_handler
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler)
-logger.addHandler(stderr_handler)
 
 DATA_DELAY_REFRESH_LIMIT = 6
 MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
@@ -154,8 +151,20 @@ class Weather(SampleBase):
             try_again_time.strftime("%H:%M")
         )
 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.error("Uncaught Exception", exc_info=(
+        exc_type, exc_value, exc_traceback))
+
+
 # Main function
 if __name__ == "__main__":
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+    logger.addHandler(stderr_handler)
+    sys.excepthook = handle_exception
     weather = Weather()
-    if (not weather.process()):
-        weather.print_help()
