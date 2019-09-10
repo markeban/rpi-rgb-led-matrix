@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import requests
 from datetime import datetime
 import logging
