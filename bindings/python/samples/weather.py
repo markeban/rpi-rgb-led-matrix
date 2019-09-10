@@ -4,14 +4,11 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 from darksky import DarkSky
-import sys
-import pyowm
 import time
 import colour
 import datetime
 import os
 import logging
-import logging.config
 logger = logging.getLogger(__name__)
 
 DATA_DELAY_REFRESH_LIMIT = 6
@@ -160,13 +157,4 @@ class Weather(SampleBase):
 
 #     logger.error("Uncaught Exception", exc_info=(
 #         exc_type, exc_value, exc_traceback))
-
-# Main function
-if __name__ == "__main__":
-    logging.config.fileConfig('mylogger.conf')
-    logger = logging.getLogger('mylogger')
-    weather = Weather()
-    print("hello")
-    if (not weather.process()):
-        weather.print_help()
 
