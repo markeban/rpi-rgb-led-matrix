@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import sys
 import requests
-from mylogger import logging, file_handler, stderr_handler
 from datetime import datetime
+import logging
+logger = logging.getLogger(__name__)
 
 ################ Chicago ###################
 LATITUDE = '41.974925'
