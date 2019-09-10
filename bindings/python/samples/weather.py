@@ -10,7 +10,9 @@ import time
 import colour
 import datetime
 import os
-from mylogger import logging, file_handler, stderr_handler
+import logging
+import logging.config
+logger = logging.getLogger(__name__)
 
 DATA_DELAY_REFRESH_LIMIT = 6
 MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
@@ -151,27 +153,20 @@ class Weather(SampleBase):
             try_again_time.strftime("%H:%M")
         )
 
-def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
+# def handle_exception(exc_type, exc_value, exc_traceback):
+#     if issubclass(exc_type, KeyboardInterrupt):
+#         sys.__excepthook__(exc_type, exc_value, exc_traceback)
+#         return
 
-    logger.error("Uncaught Exception", exc_info=(
-        exc_type, exc_value, exc_traceback))
-
+#     logger.error("Uncaught Exception", exc_info=(
+#         exc_type, exc_value, exc_traceback))
 
 # Main function
 if __name__ == "__main__":
+    logging.config.fileConfig('mylogger.conf')
+    logger = logging.getLogger('mylogger')
     weather = Weather()
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(file_handler)
-    logger.addHandler(stderr_handler)
-    sys.excepthook = handle_exception
+    print("hello")
+    if (not weather.process()):
+        weather.print_help()
 
-
-# # Main function
-# if __name__ == "__main__":
-#     weather = Weather()
-#     if (not weather.process()):
-#         weather.print_help()
