@@ -28,7 +28,7 @@ class DarkSky:
             timeout = 10
           )
       except requests.exceptions.RequestException as error:
-          logger.warning("Unable to get DarkSky Data: " + error)
+          logger.warning("Unable to get DarkSky Data: " + str(error))
           return False
       else:
           logger.info("API call to DarkSky status code: " + str(raw_response.status_code))
