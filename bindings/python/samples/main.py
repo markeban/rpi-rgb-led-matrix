@@ -15,7 +15,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_exception
 
 if __name__ == "__main__":
-    logging.config.fileConfig('mylogger.conf', disable_existing_loggers=False)
+    logging.config.fileConfig('/home/pi/projects/weather-python/rpi-rgb-led-matrix/bindings/python/samples/mylogger.conf', disable_existing_loggers=False)
     logger = logging.getLogger('mylogger')
     weather = Weather()
     if (not weather.process()):

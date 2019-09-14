@@ -12,7 +12,7 @@ LONGITUDE = '-87.662873'
 class DarkSky:
   def __init__(self):
       self.json_response = None
-      key_file = open("darksky.env", "r")
+      key_file = open("/home/pi/projects/weather-python/rpi-rgb-led-matrix/bindings/python/samples/darksky.env", "r")
       self.api_key = key_file.read().rstrip('\n')
       self.__get_data()
 

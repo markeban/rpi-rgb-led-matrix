@@ -11,8 +11,8 @@ import os
 import logging
 logger = logging.getLogger(__name__)
 
-DATA_DELAY_REFRESH_LIMIT = 6
-MAX_TRIES_OS_NETWORK_RESET_LIMIT = 20
+DATA_DELAY_REFRESH_LIMIT = 3
+CALL_INTERVAL_SECONDS = 600 # 10 minutes
 
 class Weather(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -31,7 +31,7 @@ class Weather(SampleBase):
             self.__display_image()
             self.__display_todays_low()
             self.__display_todays_high()
-            time.sleep(600) # show display for 10 minutes before refreshing
+            time.sleep(CALL_INTERVAL_SECONDS)
 
     def __determine_brightness(self):
         hour = int(time.strftime('%H'))
@@ -42,18 +42,18 @@ class Weather(SampleBase):
     
     def __display_current(self):
         font = graphics.Font()
-        font.LoadFont("../../../fonts/7x13.bdf")
+        font.LoadFont("/home/pi/projects/weather-python/rpi-rgb-led-matrix/fonts/7x13.bdf")
         temp_int = round(self.current_temp)
         text = str(temp_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 10, self.__get_color_gradient(temp_int), text)
 
     def __display_image(self):
-        image = Image.open('icons/' + self.__select_image())
+        image = Image.open('/home/pi/projects/weather-python/rpi-rgb-led-matrix/bindings/python/samples/icons/' + self.__select_image())
         self.matrix.SetImage(image.convert('RGB'), 0, 10)
 
     def __display_todays_low(self):
         font = graphics.Font()
-        font.LoadFont("../../../fonts/5x7.bdf")
+        font.LoadFont("/home/pi/projects/weather-python/rpi-rgb-led-matrix/fonts/5x7.bdf")
         temp_min_int = round(self.todays_low)
         text = '\u2193 ' + str(temp_min_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 52,
@@ -61,7 +61,7 @@ class Weather(SampleBase):
 
     def __display_todays_high(self):
         font = graphics.Font()
-        font.LoadFont("../../../fonts/5x7.bdf")
+        font.LoadFont("/home/pi/projects/weather-python/rpi-rgb-led-matrix/fonts/5x7.bdf")
         temp_max_int = round(self.todays_high)
         text = '\u2191 ' + str(temp_max_int) + '\u00b0C'
         graphics.DrawText(self.matrix, font, 2, 62,
@@ -79,27 +79,26 @@ class Weather(SampleBase):
             self.api_tries = 0
         else:
             self.api_tries += 1
-            if self.api_tries >= DATA_DELAY_REFRESH_LIMIT and self.current_temp is None:
-                if self.api_tries >= MAX_TRIES_OS_NETWORK_RESET_LIMIT: self.__reset_os_network_interface()
+            if self.api_tries >= DATA_DELAY_REFRESH_LIMIT or self.current_temp is None:
+                self.__reset_os_network_interface()
                 now = datetime.datetime.now()
-                try_again_seconds = 600 * self.api_tries
-                try_again_time = now + datetime.timedelta(seconds=try_again_seconds)
+                try_again_time = now + datetime.timedelta(seconds=CALL_INTERVAL_SECONDS)
                 logger.warning(
-                    "failed to get weather data after " + str(self.api_tries) + " attempt(s). Will try again in " + str(round(try_again_seconds/60)) + " minutes (at " + try_again_time.strftime("%d-%b-%y %H:%M:%S") + ")"
+                    "failed to get weather data after " + str(self.api_tries) + " attempt(s). Will try again in " + str(round(CALL_INTERVAL_SECONDS/60)) + " minutes (at " + try_again_time.strftime("%d-%b-%y %H:%M:%S") + ")"
                 )
                 self.__display_data_failure(try_again_time)
-                time.sleep(try_again_seconds)
+                time.sleep(CALL_INTERVAL_SECONDS)
                 self.matrix.Clear()
                 self.__get_weather()
             else:
-                logger.warning("Will try again in 10 minutes to update weather data. Displaying old data.")
+                logger.warning("Attempt: " + str(self.api_tries) + ". Will try again in " + str(round(CALL_INTERVAL_SECONDS/60)) + " minutes to update weather data. Displaying old data.")
                 pass
         self.matrix.Clear()
                 
 
     def __reset_os_network_interface(self):
        cmd = os.system("/etc/init.d/networking restart")
-       logger.warning("Reset OS network interface. Response: " + cmd)
+       logger.warning("Reset OS network interface. Response: " + str(cmd))
 
     def __select_image(self):
         icon_map = {
@@ -128,7 +127,7 @@ class Weather(SampleBase):
 
     def __display_data_failure(self, try_again_time):
         font = graphics.Font()
-        font.LoadFont("../../../fonts/5x7.bdf")
+        font.LoadFont("/home/pi/projects/weather-python/rpi-rgb-led-matrix/fonts/5x7.bdf")
         textColor = graphics.Color(255,105,180)
         graphics.DrawText(self.matrix, font, 2, 10, textColor, "Failed")
         graphics.DrawText(self.matrix, font, 2, 20, textColor, "Try")
@@ -149,12 +148,4 @@ class Weather(SampleBase):
             textColor,
             try_again_time.strftime("%H:%M")
         )
-
-# def handle_exception(exc_type, exc_value, exc_traceback):
-#     if issubclass(exc_type, KeyboardInterrupt):
-#         sys.__excepthook__(exc_type, exc_value, exc_traceback)
-#         return
-
-#     logger.error("Uncaught Exception", exc_info=(
-#         exc_type, exc_value, exc_traceback))
 
