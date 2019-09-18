@@ -7,7 +7,7 @@ from darksky import DarkSky
 import time
 import colour
 import datetime
-import os
+import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
@@ -97,8 +97,8 @@ class Weather(SampleBase):
                 
 
     def __reset_os_network_interface(self):
-       cmd = os.system("/etc/init.d/networking restart")
-       logger.warning("Reset OS network interface. Response: " + str(cmd))
+       stdout = subprocess.check_output(['sudo', 'service', 'networking', 'restart'])
+       logger.warning("Reset OS network interface. Response: " + str(stdout))
 
     def __select_image(self):
         icon_map = {
