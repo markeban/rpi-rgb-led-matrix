@@ -94,24 +94,33 @@ class Weather(SampleBase):
                 logger.warning("Attempt: " + str(self.api_tries) + ". Will try again in " + str(round(CALL_INTERVAL_SECONDS/60)) + " minutes to update weather data. Displaying old data.")
                 pass
         self.matrix.Clear()
-                
 
     def __reset_os_network_interface(self):
-       stdout = subprocess.check_output(['sudo', 'service', 'networking', 'restart'])
-       logger.warning("Reset OS network interface. Response: " + str(stdout))
+        process = subprocess.run(['sudo', '/sbin/wpa_cli', '-iwlan0','reassociate'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if process.returncode == 0:
+            logger.warning(process)
+        else:
+            raise subprocess.SubprocessError(process.stderr)
 
     def __select_image(self):
         icon_map = {
             'clear-day': 'sunny_day.png',
             'clear-night': 'clear_night.png',
+            'fog': 'fog.png',
             'partly-cloudy-day': 'partly_cloudy_day.png',
             'partly-cloudy-night': 'partly_cloudy_night.png',
             'cloudy': 'cloudy.png',
             'rain': 'rain_day.png',
             'thunderstorm': 'thunder_storms_day.png',
+            'sleet': 'sleet.png',
             'snow': 'snow_night.png',
+            'wind': 'wind.png',
         }
-        return icon_map.get(self.icon, 'rainbow_other.png')
+        missing_image = 'rainbow_other.png'
+        display_image = icon_map.get(self.icon, missing_image)
+        if display_image == missing_image:
+            logger.error("image mapping doesn\'t exist for :\"" + str(self.icon) + "\" and a new image should be added to the existing map."
+        return display_image
 
     def __get_color_gradient(self, temp_int):
         # min/max range -30/45 Celsius
@@ -126,6 +135,7 @@ class Weather(SampleBase):
         return graphics.Color(rgb_255[0], rgb_255[1], rgb_255[2])
 
     def __display_data_failure(self, try_again_time):
+        logger.warning('Displaying \"Failed / Try / Again on:\"')
         font = graphics.Font()
         font.LoadFont("/home/pi/projects/weather-python/rpi-rgb-led-matrix/fonts/5x7.bdf")
         textColor = graphics.Color(255,105,180)

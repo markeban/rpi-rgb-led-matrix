@@ -32,6 +32,7 @@ class DarkSky:
           return False
       else:
           logger.info("API call to DarkSky status code: " + str(raw_response.status_code))
+          if int(raw_response.status_code) != 200: return False
           self.json_response = raw_response.json()
           self
 
