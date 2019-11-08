@@ -106,10 +106,10 @@ class Weather(SampleBase):
         icon_map = {
             'clear-day': 'sunny_day.png',
             'clear-night': 'clear_night.png',
+            'cloudy': 'cloudy.png',
             'fog': 'fog.png',
             'partly-cloudy-day': 'partly_cloudy_day.png',
             'partly-cloudy-night': 'partly_cloudy_night.png',
-            'cloudy': 'cloudy.png',
             'rain': 'rain_day.png',
             'thunderstorm': 'thunder_storms_day.png',
             'sleet': 'sleet.png',
